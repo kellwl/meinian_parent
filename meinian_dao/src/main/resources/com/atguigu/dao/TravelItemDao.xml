@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.TravelItemDao">
+    <insert id="add">
+        insert  into  t_travelitem(code,name,sex,age,price,type,remark,attention)
+        values (#{code},#{name},#{sex},#{age},#{price},#{type},#{remark},#{attention})
+    </insert>
+    <update id="edit">
+        update t_travelitem
+        <set>
+            <if test="code!=null and code.length>0">
+                code=#{code},
+            </if>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="sex!=null and sex.length>0">
+                sex=#{sex},
+            </if>
+            <if test="age!=null and age.length>0">
+                age=#{age},
+            </if>
+            <if test="price!=null">
+                price=#{price},
+            </if>
+            <if test="type!=null and type.length>0">
+                type=#{type},
+            </if>
+            <if test="remark!=null and remark.length>0">
+                remark=#{remark},
+            </if>
+            <if test="attention!=null and attention.length>0">
+                attention=#{attention},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="del">
+        delete  from  t_travelitem where  id=#{id}
+    </delete>
+    <select id="findPage" resultType="com.atguigu.pojo.TravelItem">
+        select * from t_travelitem
+        <where>
+            <if test="value!=null and value.length>0">
+                code=#{value} or name like "%"#{value}"%" /*获取简单参数必须是value 或者用注解@param("")指定一个名字*/
+            </if>
+        </where>
+    </select>
+    <select id="findById" resultType="com.atguigu.pojo.TravelItem">
+        select  *  from   t_travelitem
+        where  id=#{id}
+    </select>
+    <select id="findAll" resultType="com.atguigu.pojo.TravelItem">
+        select  *  from  t_travelitem
+    </select>
+    <select id="findCountByTravelitemId" resultType="java.lang.Long">
+        select  count(*)  from  t_travelgroup_travelitem  where  travelitem_id=#{id}
+     </select>
+    <!--<select id="findTravelItemById" resultType="com.atguigu.pojo.TravelItem">
+        select  t_travelitem.*  from  t_travelgroup_travelitem,t_travelitem
+        where  t_travelitem.id=t_travelgroup_travelitem.travelitem_id
+        and   travelgroup_id=#{id}
+    </select>-->
+    <select id="findTravelItemById" resultType="com.atguigu.pojo.TravelItem">
+        select  t_travelitem.*  from  t_travelitem
+        where  id in (select   travelitem_id  from   t_travelgroup_travelitem where  travelgroup_id=#{id}  )
+    </select>
+
+
+</mapper>
+
